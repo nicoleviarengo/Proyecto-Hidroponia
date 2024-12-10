@@ -1,0 +1,232 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+body {
+    background-image: url('/static/cultivos/fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative; 
+    width: 100%;
+    text-align: center;
+    z-index: 1;
+    font-family: "Roboto Slab", serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(43, 43, 43, 0.772); /* Fondo semi-opaco encima de la imagen */
+    z-index: -1; /* Envía la imagen al fondo */
+    width: 100%;
+    height: 100%;
+}
+.datos-entrada{
+    background-color: #2b2b2b;
+    margin-left: 5%;
+    border-radius: 15px;
+    padding: 20px;
+    width: 20%;
+    text-align: center;
+}
+.container {
+    background-color: #2b2b2b;
+    margin-left: 6%;
+    margin-right: 6%;
+    border-radius: 15px;
+    padding: 20px;
+    width: 70%;
+    max-width: 900px;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #fff;
+    -webkit-text-stroke: 1px rgb(212, 146, 122);
+}
+
+h1 span {
+    color: #367506; /* Color verde */
+    -webkit-text-stroke: 0.8px rgb(237, 255, 159);
+}
+
+.input-container select {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    font-size: 16px;
+}
+
+.fecha-container form {
+    color:#ffffff;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    font-size: 16px;
+}
+.hora-container {
+    color: #f0f0f0;
+}
+.form-funcionamiento-riego {
+    color:rgb(65, 83, 247);
+    font-weight: bold;
+}
+.form-funcionamiento-luz {
+    color:rgb(255, 196, 0);
+    font-weight: bold;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    max-width: 300px;
+    font-size: 16px;
+}
+.cultivos-container{
+    padding: 10px;
+    border-radius: 10px;
+    color: #ffffff;
+}
+.mis-cultivos {
+    color: white;
+    text-decoration: none; 
+    /*padding: 10px 20px;
+    background-color: #28a745; 
+    border-radius: 5px; */
+    font-weight: bold;
+}
+.mis-cultivos:hover {
+    color: #ffa600; 
+    font-weight: bold;
+    cursor: pointer;
+}
+section.resumen {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    color: #333;
+}
+
+section.resumen p {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+section.riego p{
+    font-size: 16px;
+    font-weight: bold;
+}
+.boton-cosechar{
+    background-color: rgb(217, 255, 0);
+    font-family: "Roboto Slab", serif;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 10px 20px; 
+    cursor:pointer;
+}
+.boton-cosechar:hover {
+    color: #ffa600;
+    font-weight: bold;
+}
+.boton-aceptar{
+    background-color: rgb(217, 255, 0);
+    font-family: "Roboto Slab", serif;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-top: 2px;
+    padding: 10px 20px; 
+    cursor:pointer;
+    margin: 5px;
+}
+thead {
+    background-color: #d6ffb6;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f0f0f0;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+tbody td {
+    text-align: center;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+  }
+  .modal-content {
+    background-color: white; 
+    margin: 15% auto; 
+    padding: 20px; 
+    border: 1px solid #888; 
+    width: 80%; 
+    max-width: 500px;
+  }
+  .boton-guardar{
+    background-color: rgb(217, 255, 0);
+    font-family: "Roboto Slab", serif;
+    border-radius: 10px;
+    font-size: 16px;
+    padding: 10px 20px; 
+    cursor:pointer;
+}
+.boton-guardar:hover {
+    color: #ffa600;
+    font-weight: bold;
+}
+  .close {
+    color: red;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+

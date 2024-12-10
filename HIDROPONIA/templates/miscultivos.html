@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Hidroponia</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'cultivos/miscultivos.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> PROYECTO <span>HIDROPONIA</span></h1>
+            <div>
+                <button id="nuevoCultivoBtn" class="nuevo-cultivo">
+                    <i class="bi bi-plus-circle"></i> Nuevo cultivo </button>                  
+            </div>
+           
+        </header>
+        <section class="seccion-cultivos">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Cuando se cultiva</th>
+                        <th>Cuidados</th>
+                        <th>Comentarios sobre la cosecha</th>
+                        <th>Acciones</th>
+                        <th> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cultivo in cultivos %}
+                    <tr>
+                        <td>{{ cultivo.nombre }}</td>
+                        <td>{{ cultivo.tipo }}</td>
+                        <td>{{ cultivo.cuandoSeCultiva }}</td>
+                        <td>{{ cultivo.cuidados }}</td>
+                        <td>{{ cultivo.comentarios }}</td>
+                    <td>
+                        <div>
+                            <button class="editar" onclick="editarCultivo('{{ cultivo.id }}','{{ cultivo.nombre }}', '{{ cultivo.tipo }}', '{{ cultivo.cuandoSeCultiva }}', '{{ cultivo.cuidados }}', '{{ cultivo.comentarios }}')">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </button>
+                            <button id="parametrosBtn" class="parametros-cultivos">
+                                Parametros
+                            </button>
+                            <td>
+                                <form method="POST" action="{% url 'eliminar_cultivo' cultivo.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="eliminar-boton">
+                                        <i class="bi bi-trash" fill="currentColor"></i></button>
+                                        <style>
+                                            .eliminar-boton {
+                                                background-color: red;
+                                                margin-top: 10px;
+                                                align-items: center;
+                                                color: white;         
+                                                border: 1px solid black;
+                                                border-radius: 8px;
+                                                padding: 5px 10px;  
+                                                cursor: pointer;    
+                                            }
+                                        </style>
+                                </form>
+                            </td>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No hay cultivos registrados.</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <!-- Modal Nuevo Cultivo -->
+    <div id="cultivoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Agregar Nuevo Cultivo</h2>
+            <form id="cultivoForm" method="POST" action="{% url 'guardar_cultivo' %}">
+                {% csrf_token %}
+                <!-- {{ formulario.as_p }} -->
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required><br><br>
+                <label for="tipo">Tipo:</label>
+                <input type="text" id="tipo" name="tipo" required><br><br>
+                <label for="cuando">Cuando se cultiva:</label>
+                <input type="text" id="cuando" name="cuando" required><br><br>
+                <label for="cuidados">Cuidados:</label>
+                <input type="text" id="cuidados" name="cuidados" required><br><br>
+                <label for="comentarios">Comentario sobre la cosecha:</label>
+                <input type="text" id="comentarios" name="comentarios"><br><br>
+                <button id="guardarBtn" class="boton-guardar" type="submit">Guardar</button>
+            </form>
+        </div>
+        <style>
+            .parametros {
+                display: none; /* Inicialmente oculto */
+                position: fixed; /* Fijo en la pantalla */
+                left: 0;
+                top: 0;
+                width: 100%; 
+                height: 100%;
+                overflow: auto; /* Permite el scroll si el contenido es grande */
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        </style>
+    </div>
+
+    <!-- Modal Parametros -->
+     <div id="parametrosModal" class="parametros" >
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Configurar parametros</h2>
+            <form id="parametrosForm" method="POST" action="{% url 'guardar_parametros' %}">
+                {% csrf_token %}
+                <label for="luminiscencia_min">Luminiscencia Minima:</label>
+                <input type="number" id="luminiscencia_min" name="luminiscencia_min" required><br><br>
+                <label for="luminiscencia_max">Luminiscencia Maxima:</label>
+                <input type="number" id="luminiscencia_max" name="luminiscencia_max" required><br><br>
+                <label for="humedadSuelo_min">Humedad del suelo Minima:</label>
+                <input type="number" id="humedadSuelo_min" name="humedadSuelo_min" required><br><br>
+                <label for="humedadSuelo_max">Humedad del suelo Maxima:</label>
+                <input type="number" id="humedadSuelo_max" name="humedadSuelo_max" required><br><br>
+                <label for="temperaturaAmbiente_min">Temperatura Minima:</label>
+                <input type="number" id="temperaturaAmbiente_min" name="temperaturaAmbiente_min" required><br><br>
+                <label for="temperaturaAmbiente_max">Temperatura Maxima:</label>
+                <input type="number" id="temperaturaAmbiente_max" name="temperaturaAmbiente_max" required><br><br>
+                <label for="humedadAmbiente_min">Humedad del ambiente Minima:</label>
+                <input type="number" id="humedadAmbiente_min" name="humedadAmbiente_min" required><br><br>
+                <label for="humedadAmbiente_max">Humedad del ambiente Maxima:</label>
+                <input type="number" id="humedadAmbiente_max" name="humedadAmbiente_max" required><br><br>
+                <button id="guardarBtn" class="boton-guardar" type="submit">Guardar</button>
+            </form>
+        </div>
+     </div>
+ 
+    <script>
+        const modal = document.getElementById('cultivoModal');
+        const parametrosModal = document.getElementById('parametrosModal');
+        const btnNuevoCultivo = document.getElementById('nuevoCultivoBtn');
+        const BtnEditar = document.getElementById('editarBtn');
+        const BtnParametros = document.getElementById('parametrosBtn');
+        const closeBtn = document.querySelectorAll(".close");
+
+        btnNuevoCultivo.onclick = function() {
+            modal.style.display = 'block';
+        }
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // PARAMETROS
+        BtnParametros.onclick = function() {
+            parametrosModal.style.display = 'block';
+        }
+        window.onclick = function(event) {
+            if (event.target == parametrosModal) {
+                parametrosModal.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('parametrosForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch("{% url 'guardar_parametros' %}", {
+                method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'  // Agrega el token CSRF para seguridad
+            },
+            body: formData
+            })
+            .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message || 'Parametros guardados exitosamente');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+        });
+
+        // EDITAR
+        BtnEditar.onclick = function() {
+            modal.style.display = 'block'; }
+
+        document.getElementById('cultivoForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Evita el envío normal del formulario
+
+        const formData = new FormData(this);
+
+        fetch("{% url 'guardar_cultivo' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'  // Agrega el token CSRF para seguridad
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message || 'Cultivo guardado exitosamente');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    function editarCultivo(id, nombre, tipo, cuando, cuidados, comentarios) {
+        document.getElementById('nombre').value = nombre;
+        document.getElementById('tipo').value = tipo;
+        document.getElementById('cuando').value = cuando;
+        document.getElementById('cuidados').value = cuidados;
+        document.getElementById('comentarios').value = comentarios;
+        // Cambiar el action del formulario para actualizar
+        document.getElementById('cultivoForm').action = `/cultivos/actualizar/${id}/`;
+        //document.getElementById('guardarBtn').textContent = 'Actualizar';
+        modal.style.display = 'block';
+    }
+
+    closeBtn.forEach(btn => {
+    btn.onclick = function() {
+        modal.style.display = 'none';
+        parametrosModal.style.display = 'none';
+    };
+});
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+        if (event.target == parametrosModal) {
+            parametrosModal.style.display = 'none';
+        }
+    }
+    </script>    
+</body>
+</html>

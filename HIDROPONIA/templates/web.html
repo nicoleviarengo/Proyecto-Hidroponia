@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Hidroponía</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'cultivos/web.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+<body>
+    <div class="datos-entrada">
+        <div class="input-container">
+            <select id="cultivo-selector">
+                <option value="">Selecciona el cultivo</option>
+                {% for cultivo in cultivos %}
+                    <option value="{{ cultivo.nombre }}">{{ cultivo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="fecha-container">
+            <form id="select-fecha" method="GET" action="{% url 'web' %}">
+                <label>Selecciona una fecha:</label>
+                <input type="date" name="fechaa">
+                <label>Selecciona un horario:</label>
+                <input type="time" name="hora">
+                <button id="BtnAceptar" type="button" class="boton-aceptar">Aceptar</button>
+            </form>
+            <p class="function">Funcionamiento</p>
+            <style>
+                .function{
+                    color: white;
+                }
+            </style>
+            <select class="form-funcionamiento-riego" aria-label="Selecciona...">
+                <option selected>Riego </option>
+                <option value="1">AUNTOMATICO</option>
+                <option value="2">MANUAL</option>
+                <option value="3">DESACTIVADO</option>
+            </select>
+            <style>
+                .form-funcionamiento-riego {
+                background-color:rgb(177, 229, 255);
+                border-radius: 10px;
+                padding: 6px;
+                margin: 5px;
+            }
+            </style>
+            <select class="form-funcionamiento-luz" aria-label="Selecciona...">
+                <option selected>Luz </option>
+                <option value="1">AUNTOMATICO</option>
+                <option value="2">MANUAL</option>
+                <option value="3">DESACTIVADO</option>
+            </select>
+            <style>
+                .form-funcionamiento-luz {
+                background-color:rgb(253, 248, 180);
+                border-radius: 10px;
+                padding: 6px;
+                margin: 5px;
+            }
+            </style>
+        </div>
+    </div>
+    <div class="container">
+        <header>
+            <h1> PROYECTO <span>HIDROPONIA</span></h1>
+            <div class="cultivos-container">
+                <a href="{% url 'mis_cultivos' %}" class="mis-cultivos">Mis cultivos</a>
+            </div>
+        </header>
+    
+        <section class="resumen">
+            <div style="display: flex; align-items: center;">
+                <p style="font-size: large;" >Temperatura actual: {{ temperatura.0.temp }} °C</p>
+                <img src="http://openweathermap.org/img/wn/{{ temperatura.0.icon }}@2x.png" alt="Icono del clima" width="50px">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y hora</th>
+                        <th>Dispositivo</th>
+                        <th>Luz</th>
+                        <th>Humedad de ambiente</th>
+                        <th>Temperatura de ambiente</th>
+                        <th>Humedad de suelo</th>
+                        <th>Rendimiento</th>
+                    </tr>
+                </thead>
+                <!-- codigo agregado-->
+                <tbody>
+                    {% if page_obj %}
+                        {% for data in page_obj %}
+                            <tr>
+                                <td>{{ data.fecha }}</td>
+                                <td>{{ data.dispositivo }}</td>
+                                <td>{{ data.luz }}</td>
+                                <td>{{ data.humedad }}</td>
+                                <td>{{ data.temperatura }}</td>
+                                <td>{{ data.humedadSuelo }}</td>
+                                <td>{{ data.rendimiento }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">No hay datos de resumen disponibles.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+                
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if page_obj.has_previous %}
+                            <a href="?page=1">&laquo; Primera</a>
+                            <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                        {% endif %}
+                
+                        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </table>
+            <section class="riego">
+                <p>Ultimo riego: </p>
+                <div>
+                    <button id="harvestBtn" type="button" class="boton-cosechar">Cosechar</button>
+                    <style>
+                        
+                    </style>
+                </div>
+            </section>
+        </section>
+    </div>
+    <!-- Modal -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Comentario sobre la cosecha</h2>
+          <textarea id="harvestComment" rows="4" cols="50" placeholder="Escribe un comentario..."></textarea>
+          <br>
+          <button id="saveCommentBtn" class="boton-guardar">Guardar comentario</button>
+        </div>
+      </div>
+    <script>
+        // Referencias a elementos
+    const harvestBtn = document.getElementById("harvestBtn"); // boton cosechar
+    const modal = document.getElementById("commentModal"); // boton comentario
+    const closeModalBtn = document.querySelector(".close");
+    const saveCommentBtn = document.getElementById("saveCommentBtn");
+
+    const cultivoSelector = document.getElementById('cultivo-selector');
+        cultivoSelector.addEventListener('change', function() {
+            const selectedCultivo = this.value;
+            console.log('Cultivo seleccionado:', selectedCultivo); })
+    
+    // Mostrar el modal al hacer clic en "Cosechar"
+    harvestBtn.onclick = function(event) {
+        event.preventDefault(); 
+      modal.style.display = "block";
+    }
+    
+    // Cerrar el modal al hacer clic en la "X"
+    closeModalBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // Cerrar el modal al hacer clic fuera de él
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    // Guardar comentario en la base de datos
+    saveCommentBtn.onclick = function() {
+      const comment = document.getElementById("harvestComment").value;
+    
+      // Validación: Asegurarse que no esté vacío
+      if (comment.trim() === "") {
+        alert("Por favor, ingresa un comentario.");
+        return;
+      }
+    }
+    </script>
+</body>
+</html>
